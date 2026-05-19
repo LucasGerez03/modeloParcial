@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Scanner;
 import java.util.Comparator;
 
-public class EstacionEspacial implements Exploracion {
+public class EstacionEspacial {
 
     //-------------------------------------------------------------
     //atributos
@@ -134,7 +134,6 @@ public class EstacionEspacial implements Exploracion {
 
     //----------------------------------------------------------
     //opcion 3
-    @Override
     public void iniciarExploracion() {
         NaveExploracion ne;
         Carguero c;
