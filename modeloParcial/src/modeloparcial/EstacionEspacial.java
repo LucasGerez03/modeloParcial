@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Scanner;
 import java.util.Comparator;
 
-
 public class EstacionEspacial implements Exploracion {
 
     //-------------------------------------------------------------
@@ -28,7 +27,7 @@ public class EstacionEspacial implements Exploracion {
     //metodos
     private boolean yaEstaEnEstacion(String nombreNave, int unAnio) {
         for (Nave n1 : this.navesEnEstacion) {
-            if (n1.getNombre().equals(nombreNave) && n1.getAnioDeLanzamiento() == unAnio) {
+            if (n1.getNombre().equalsIgnoreCase(nombreNave) && n1.getAnioDeLanzamiento() == unAnio) {
                 return true;
             }
         }
@@ -37,8 +36,7 @@ public class EstacionEspacial implements Exploracion {
 
     //----------------------------------------------------------
     //opcion 1
-    public void agregarNave() {
-        Scanner scanner = new Scanner(System.in);
+    public void agregarNave(Scanner scanner) {
 
         Nave naveAgregar = null;
 
@@ -48,40 +46,39 @@ public class EstacionEspacial implements Exploracion {
         System.out.println("3. Crucero estelar");
         System.out.print("Seleccione tipo de nave: ");
         try {
-            int tipo = scanner.nextInt();
+            int tipo = Integer.parseInt(scanner.nextLine());
             while (!(1 <= tipo && tipo <= 3)) {
                 System.out.println("XXXXXX VALOR INCORRECTO: Ingrese un numero entre (1 - 3) XXXXXX\n");
-                tipo = scanner.nextInt();
+                tipo = Integer.parseInt(scanner.nextLine());
             }
 
             System.out.print("Nombre: ");
-            String nombre = scanner.next();
+            String nombre = scanner.nextLine();
 
             System.out.print("Capacidad de tripulación: ");
-            int tripulacion = scanner.nextInt();
+            int tripulacion = Integer.parseInt(scanner.nextLine());
 
             System.out.print("Año de lanzamiento: ");
-            int anio = scanner.nextInt();
+            int anio = Integer.parseInt(scanner.nextLine());
 
             while (yaEstaEnEstacion(nombre, anio)) {
                 System.out.println("***ADVERTENCIA***: los datos ingresados pertenece una nave existente en la Estacion Espacial");
                 System.out.println("Porfavor Ingrese los datos nuevamente de su nave (nombre y anio)");
                 System.out.print("Nombre: ");
-                nombre = scanner.next();
+                nombre = scanner.nextLine();
                 System.out.print("Año de lanzamiento: ");
-                anio = scanner.nextInt();
-
+                anio = Integer.parseInt(scanner.nextLine());
             }
 
             switch (tipo) {
                 case 1:
                     System.out.println("Tipos de misión (1. CARTOGRAFIA, 2. INVESTIGACION, 3. CONTACTO):");
                     Mision misionNave;
-                    int opMision = scanner.nextInt();
+                    int opMision = Integer.parseInt(scanner.nextLine());
 
                     while (!( 1 <= opMision && opMision <= 3)) {
                         System.out.println("Ingrese un numero entre (1 - 3)\n");
-                        opMision = scanner.nextInt();
+                        opMision = Integer.parseInt(scanner.nextLine());
                     }
 
                     if (opMision == 1) {
@@ -93,30 +90,32 @@ public class EstacionEspacial implements Exploracion {
                     }
 
                     naveAgregar = new NaveExploracion(misionNave, nombre, tripulacion, anio);
-
                     break;
+                    
                 case 2:
                     System.out.print("Capacidad de carga (100 a 500): ");
-                    int carga = scanner.nextInt();
+                    int carga = Integer.parseInt(scanner.nextLine());
 
                     naveAgregar = new Carguero(carga, nombre, tripulacion, anio);
-
                     break;
+                    
                 case 3:
                     System.out.print("Cantidad de pasajeros: ");
                     int pasajeros = Integer.parseInt(scanner.nextLine());
                     naveAgregar = new CruceroEstelar(pasajeros, nombre, tripulacion, anio);
-
                     break;
+                    
                 default:
                     System.out.println("XXXXXX VALOR INCORRECTO: Ingrese un numero entre (1 - 3) XXXXXX\n");
-
             }
-            this.navesEnEstacion.add(naveAgregar);
+            
+            if (naveAgregar != null) {
+                this.navesEnEstacion.add(naveAgregar);
+                System.out.println("Nave agregada con éxito.");
+            }
         } catch (Exception e) {
-            System.out.println("XXXXXXX ERROR: " + e + " Reintentar Opcion XXXXXXX\n");
+            System.out.println("XXXXXXX ERROR: " + e.getMessage() + " Reintentar Opcion XXXXXXX\n");
         }
-
     }
 
     //----------------------------------------------------------
@@ -127,7 +126,7 @@ public class EstacionEspacial implements Exploracion {
         }
     }
     
-    private void mostrarNaves(ArrayList<Nave> n1) { //solo se usa para mostrar las naves en la opcion 4 y 5
+    private void mostrarNaves(ArrayList<Nave> n1) { //solo se usa para mostrar las naves en la opcion 4, 5 y 6
         for (Nave n : n1) {
             System.out.println(n.mostrarNave());
         }
@@ -145,11 +144,11 @@ public class EstacionEspacial implements Exploracion {
         for (Nave n : this.navesEnEstacion) {
             if (n instanceof Carguero) {
                 c = (Carguero) n;
-                System.out.println(c.mostrarNave());
+                c.iniciarExploracion();
 
             } else if (n instanceof NaveExploracion) {
                 ne = (NaveExploracion) n;
-                System.out.println(ne.mostrarNave());
+                ne.iniciarExploracion();
             }
         }
         System.out.println("\n--------- Exploracion espacial completada con exito ---------\n");
@@ -157,34 +156,25 @@ public class EstacionEspacial implements Exploracion {
 
     //----------------------------------------------------------
     //opcion 4
-    public void mostrarNavesPorNombre() {;
+    public void mostrarNavesPorNombre() {
         ArrayList<Nave> navesOrdenadas = new ArrayList<>(getNavesEnEstacion());
-        Collections.sort(navesOrdenadas);
-        
-        mostrarNaves(navesOrdenadas);
-        
+        Collections.sort(navesOrdenadas); //ordeno con el compareTo de la clase Nave
+        mostrarNaves(navesOrdenadas);   //uso el metodo sobrecargado de la clase
     }
 
     //----------------------------------------------------------
     //opcion 5
-    
     public void mostrarNavesAnioDesc(){
         ArrayList<Nave> navesAnioDesc = new ArrayList<>(getNavesEnEstacion());
-        
-        Collections.sort(navesAnioDesc, (n1, n2) -> n2.getAnioDeLanzamiento()- n1.getAnioDeLanzamiento());
-        
-        mostrarNaves(navesAnioDesc);
-        
-        
-    }
+        Collections.sort(navesAnioDesc, (n1, n2) -> n2.getAnioDeLanzamiento() - n1.getAnioDeLanzamiento()); 
+        mostrarNaves(navesAnioDesc); // ^ utilizo una funcion lambda que devuelva en orden DESC las naves por anio de lanzamiento
+    }                               //uso el metodo sobrecargado de la clase
+    
     //----------------------------------------------------------
     //opcion 6
-    
     public void mostrarNavesTripDesc(){
         ArrayList<Nave> navesTripDesc = new ArrayList<>(getNavesEnEstacion());
-        
-        Collections.sort(navesTripDesc, (n1, n2) -> n2.getCapacidadTripulacion()- n1.getCapacidadTripulacion());
-        
+        Collections.sort(navesTripDesc, (n1, n2) -> n2.getCapacidadTripulacion() - n1.getCapacidadTripulacion());
         mostrarNaves(navesTripDesc);
     }
     //----------------------------------------------------------

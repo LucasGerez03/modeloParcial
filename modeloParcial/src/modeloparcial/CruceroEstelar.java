@@ -10,15 +10,19 @@ package modeloparcial;
  */
 public class CruceroEstelar extends Nave {
     //--------------------------------------------
+    //atributos
     private int cantidadDePasajeros;
     
     //--------------------------------------------
-
+    //constructor
+    
     public CruceroEstelar(int cantidadDePasajeros, String nombre, int capacidadTripulacion, int anioDeLanzamiento) {
         super(nombre, capacidadTripulacion, anioDeLanzamiento);
         this.cantidadDePasajeros = cantidadDePasajeros;
     }
     
+    //-------------------------------------------------------------
+    //metodos
     @Override
     public String mostrarNave() {
         return "CRUCERO ESTELAR: " + super.mostrarNave() + "Cantidad De Pasajeros: " + this.cantidadDePasajeros;
